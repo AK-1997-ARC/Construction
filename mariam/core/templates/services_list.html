@@ -1,0 +1,365 @@
+{% include 'index.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/service.css' %}">
+
+
+
+<div class="page-container">
+    <div class="content-container">
+        <div class="service-container">
+            {% if services %}
+                {% for service in services %}
+                <div class="service-item">
+                    <div class="service-image">
+                        <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                    </div>
+                    <div class="service-content">
+                        <h2>{{ service.name }}</h2>
+                        <p>{{ service.description }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No services available for this category.</p>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'services' %}" class="back-button">Back to Categories</a>
+    </div>
+
+    <!-- Floating Contact Button -->
+    <div class="contact-icon" onclick="toggleForm()">
+        <img src="{% static 'images/contact.png' %}" alt="Contact">
+    </div>
+
+    <!-- Contact Form -->
+    <div class="form-container" id="contactForm">
+        <div class="close-btn" onclick="toggleForm()">✖</div>
+        <div class="contact-form">
+            <h3>To discuss your architectural design project contact us below:</h3>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if form %}
+                    {% for field in form %}
+                    <div class="form-group">
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+            
+
+                {% endif %}
+                
+                <div class="form-group checkbox-group">
+                    <label for="privacy">I understand that my data will be stored in accordance with the privacy policy</label>
+                </div>
+                
+                <button type="submit" class="submit-btn">SUBMIT</button>
+                <br><br><br>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleForm() {
+        const form = document.getElementById("contactForm");
+        form.classList.toggle("active");
+    }
+</script>
+
+<style>
+/* Main Containers */
+.page-container {
+    display: flex;
+    position: relative;
+    min-height: 100vh;
+}
+
+.content-container {
+    flex: 1;
+    padding-right: 0; /* Removed padding since we're using a popup form now */
+}
+
+/* Service Styling */
+.service-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 50px;
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 30px;
+}
+
+.service-image img {
+    width: 300px;
+    height: auto;
+    border-radius: 10px;
+}
+
+.service-content {
+    max-width: 600px;
+}
+
+.service-content h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #fffefe;
+}
+
+.service-content p {
+    font-size: 16px;
+    color: #666;
+    text-align: justify;
+}
+
+.back-button {
+    display: block;
+    margin: 20px 0 50px 50px;
+    text-decoration: none;
+    color: white;
+    background: #333;
+    padding: 10px 20px;
+    border-radius: 5px;
+    width: fit-content;
+}
+
+/* Floating Contact Icon */
+.contact-icon {
+    position: fixed;
+    bottom: 30px;
+    /* right: 30px; */
+    width: 60px;
+    height: 60px;
+    background: #333;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+.contact-icon img {
+    width: 35px;
+    height: auto;
+}
+
+.contact-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Form Container */
+.form-container {
+    position: fixed;
+    top: 55%;
+    right: -500px; /* Hidden by default */
+    width: 400px;
+    height: auto;
+    max-height: 780px; /* Adjust height */
+    transform: translateY(-50%);
+    background: #fff;
+    box-shadow: -2px 0 20px rgba(0, 0, 0, 0.2);
+    padding: 15px; /* Reduced padding */
+    border-radius: 12px 0 0 12px;
+    transition: right 0.4s ease-in-out;
+    overflow: hidden; /* Prevent scrolling */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* Show Form */
+.form-container.active {
+    right: 0;
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    color: #333;
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
+}
+
+.close-btn:hover {
+    transform: scale(1.2);
+}
+
+/* Contact Form */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Reduce gap between fields */
+    height: auto;
+    width: 100%;
+    flex-grow: 1;
+}
+
+/* Form Title */
+.contact-form h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+    line-height: 1.3;
+    text-align: left;
+    font-weight: normal;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 6px; /* Reduce margin to fit all fields */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #b67a32; /* Gold/brown color */
+    font-size: 14px;
+}
+
+/* Input Fields */
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 6px; /* Reduce padding */
+    font-size: 14px; /* Reduce font size */
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #fff;
+    transition: border 0.3s ease;
+}
+
+/* Focus Effect */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: #b67a32;
+    outline: none;
+}
+
+/* Reduce textarea height */
+.form-group textarea {
+    height: 50px; /* Reduced */
+    resize: none;
+}
+
+/* Adjust checkbox spacing */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.checkbox-group input {
+    width: auto;
+    margin-top: 3px;
+}
+
+.checkbox-group label {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+}
+
+
+input[type="date"]::before {
+    content: attr(data-placeholder);
+    color: #aaa; /* Placeholder color */
+    position: absolute;
+    pointer-events: none;
+}
+
+input[type="date"]:focus::before,
+input[type="date"]:valid::before {
+    content: ''; /* Remove placeholder when the field is focused or filled */
+}
+
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    background: #fff;
+    color: #333;
+    border: 1px solid #333;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+    display: block;
+    /* margin-top: 5px; */
+}
+
+.submit-btn:hover {
+    background-color: #f5f5f5;
+}
+
+/* Mobile Friendly */
+@media (max-width: 768px) {
+    .form-container {
+        width: 100%;
+        right: -100%;
+        border-radius: 0;
+        max-height: 100vh;
+    }
+
+    .form-container.active {
+        right: 0;
+    }
+
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+</style>
+<script>
+    $(document).ready(function() {
+    const dateInput = $('input[type="date"]');
+
+    dateInput.each(function() {
+        const placeholder = $(this).attr('data-placeholder');
+
+        // Initially display placeholder if the field is empty
+        if (!$(this).val()) {
+            $(this).attr('type', 'text').val(placeholder);
+        }
+
+        // On focus, switch to 'date' type and clear placeholder
+        $(this).on('focus', function() {
+            if ($(this).val() === placeholder) {
+                $(this).attr('type', 'date').val('');
+            }
+        });
+
+        // On blur, switch back to placeholder if the field is empty
+        $(this).on('blur', function() {
+            if (!$(this).val()) {
+                $(this).attr('type', 'text').val(placeholder);
+            }
+        });
+    });
+});
+
+</script>
+
+{% endblock %}

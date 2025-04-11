@@ -1,0 +1,228 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  /* Dark theme styling */
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .wrapper {
+    padding: 20px;
+  }
+  
+  h2 {
+    color: #121212;
+    margin-bottom: 20px;
+  }
+  
+  /* Table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+  }
+  
+  th {
+    background-color: #1e1e1e;
+  }
+  
+  tr:hover {
+    background-color: #1e1e1e;
+  }
+  
+  /* Reply button */
+  .reply-btn {
+    color: #8e44ad;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .reply-btn:hover {
+    text-decoration: underline;
+  }
+  
+  /* Popup form styling */
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .popup-form {
+    background-color: #121212;
+    padding: 20px;
+    border-radius: 5px;
+    width: 400px;
+    color: #e0e0e0;
+  }
+  
+  .popup-form h3 {
+    margin-top: 0;
+    color: #e0e0e0;
+  }
+  
+  .popup-form label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .popup-form input[type="text"],
+  .popup-form input[type="email"],
+  .popup-form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    color: #e0e0e0;
+  }
+  
+  .popup-form button {
+    background-color: #f1c40f;
+    color: #121212;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .popup-form button:hover {
+    background-color: #f39c12;
+  }
+</style>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<div class="wrapper">
+  <div style="margin-left: 150px;">
+    <h2>Service Inquiries</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Service</th>
+          <th>Message</th>
+          <th>Status</th>
+          <th>Reply</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for enquiry in enquiries %}
+        <tr>
+          <td>{{ enquiry.name }}</td>
+          <td>{{ enquiry.email }}</td>
+          <td>{{ enquiry.phone }}</td>
+          <td>{{ enquiry.service.name }}</td>
+          <td>{{ enquiry.message }}</td>
+          <td class="row justify-content-center">
+          {% if enquiry.status == 'accepted' %}
+            <p><strong>Accepted</strong></p>
+        {% elif enquiry.status == 'rejected' %}
+            <p><strong>Rejected</strong></p>
+        {% elif enquiry.status == 'holding' %}
+            <p><strong>Holding</strong></p>
+        {% else %}
+        
+            <p><strong>Pending</strong></p>
+            <form action="{% url 'update_status' enquiry.id %}" method="post" class="mt-2">
+              {% csrf_token %}
+              <div>
+                <label for="status">Status:</label>
+                <select name="status" id="status">
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+                <option value="holding">Holding</option>
+                </select>
+                <button type="submit">Update Status</button>
+              </div>
+            </form>
+        {% endif %}
+        </td>
+          <td>
+            <a href="#" class="reply-btn" onclick="showReplyForm('{{ enquiry.name }}', '{{ enquiry.email }}', '{{ enquiry.id }}')">Reply</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Popup Reply Form -->
+<div class="popup-overlay" id="replyPopup">
+  <div class="popup-form">
+    <h3 id="replyTitle">Reply to Inquiry</h3>
+    <form id="replyForm" method="post" action="{% url 'reply_email' 0 %}">
+      {% csrf_token %}
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" id="reply_email" name="email" readonly>
+      </div>
+      <div>
+        <label for="subject">Subject:</label>
+        <input type="text" id="reply_subject" name="subject" placeholder="Subject">
+      </div>
+      <div>
+        <label for="message">Message:</label>
+        <textarea id="reply_message" name="message" placeholder="Your message"></textarea>
+      </div>
+      
+      <input type="hidden" id="enquiry_id" name="enquiry_id">
+      <button type="submit">Send Reply</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function showReplyForm(name, email, id) {
+    document.getElementById('replyTitle').innerText = 'Reply to Inquiry from ' + name;
+    document.getElementById('reply_email').value = email;
+    document.getElementById('enquiry_id').value = id;
+    
+    // Update form action with the actual enquiry ID
+    const form = document.getElementById('replyForm');
+    form.action = form.action.replace('/0', '/' + id);
+    
+    document.getElementById('replyPopup').style.display = 'flex';
+  }
+  
+  // Close popup when clicking outside of form
+  document.getElementById('replyPopup').addEventListener('click', function(event) {
+    if (event.target === this) {
+      this.style.display = 'none';
+    }
+  });
+</script>
+
+{% if messages %}
+<script>
+  {% for message in messages %}
+    alert("{{ message }}");
+    {% if message.tags == 'success' %}
+      document.getElementById('replyPopup').style.display = 'none';
+    {% endif %}
+  {% endfor %}
+</script>
+{% endif %}
+
+
+{% endblock %}

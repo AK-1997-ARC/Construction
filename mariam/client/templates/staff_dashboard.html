@@ -1,0 +1,112 @@
+
+
+{% block title %}Staff Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Staff Dashboard</h2>
+        </div>
+    </div>
+
+    <!-- Assigned Projects Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>My Projects</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Client</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in projects %}
+                                <tr>
+                                    <td>{{ project.title }}</td>
+                                    <td>{{ project.user.get_full_name }}</td>
+                                    <td>{{ project.start_date }}</td>
+                                    <td>{{ project.expected_end_date }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ project.status|status_color }}">
+                                            {{ project.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'project_detail' project.pk %}" class="btn btn-sm btn-info">View</a>
+                                        <a href="{% url 'update_project' project.pk %}" class="btn btn-sm btn-warning">Update</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No projects assigned.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Enquiries Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Pending Enquiries</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enquiry in enquiries %}
+                                <tr>
+                                    <td>{{ enquiry.service.name }}</td>
+                                    <td>{{ enquiry.name }}</td>
+                                    <td>{{ enquiry.email }}</td>
+                                    <td>{{ enquiry.phone }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ enquiry.status|status_color }}">
+                                            {{ enquiry.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'update_enquiry' enquiry.pk %}" class="btn btn-sm btn-info">Update</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No pending enquiries.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

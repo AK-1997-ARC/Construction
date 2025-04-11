@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html><html lang="en"><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,user-scalable=yes">
+	<meta name="robots" content="all">
+	<meta name="twitter:card" content="summary">
+	<meta property="og:type" content="website">
+	<meta property="og:locale" content="en_US">
+	<meta property="og:site_name" content="Wade Design Architects">
+	<meta property="og:image:width" content="1600">
+	<meta property="og:image:height" content="900">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<link rel="shortcut icon" href="{% static 'images/favicon.png' %}">
+	<meta name="theme-color" content="#ffffff">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+	<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,200;1,200&display=swap" rel="stylesheet">
+	<meta name="twitter:image" content="https://images.prismic.io/wade-design/876b4fa0-5c45-460b-9302-7ec488810f92_test_home_afternoon_1.jpg?auto=compress,format&rect=0,130,1842,1036&w=1600&h=900"><meta property="og:image" content="images/876b4fa0-5c45-460b-9302-7ec488810f92_test_home_afternoon_1.jpg"><link rel="image_src" type="image/jpeg" href="https://images.prismic.io/wade-design/876b4fa0-5c45-460b-9302-7ec488810f92_test_home_afternoon_1.jpg?auto=compress,format&rect=0,130,1842,1036&w=1600&h=900"><link rel="canonical" href="https://wade-design.com/">
+	<meta property="og:url" content="https://wade-design.com/">
+	<meta name="description" content="A full-service architecture firm based in Northern California focused on private residences, specialty retail concepts, wineries and hospitality projects. "><meta name="twitter:description" content="A full-service architecture firm based in Northern California focused on private residences, specialty retail concepts, wineries and hospitality projects. "><meta property="og:description" content="A full-service architecture firm based in Northern California focused on private residences, specialty retail concepts, wineries and hospitality projects. ">
+	<meta property="og:title" content="Wade Design Architects | Come Home"><meta name="twitter:title" content="Wade Design Architects | Come Home">
+	<title>Wade Design Architects | Come Home</title>
+<!-- Google tag (gtag.js) --> <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-3LXDPHSTBR"></script> <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-3LXDPHSTBR'); </script>
+</head>
+<body>
+
+
+	<header>
+		<a href="/" class="logo" title="Home"><div class="rel"><img src="{% static 'images/logo.svg' %}" alt=""></div></a>
+		<button class="toggle" title="Menu">
+			
+			Menu</button>
+		<nav>
+
+			<div class="mainmenu">
+				<h1>
+				    {% if request.session.ut == 'user' %}
+            <ul class="text-menu" type="none">
+
+                                    <li>
+                        <div class="parent has-children">
+                            <a href="#" data-trigger="2199">
+                                Services                            </a>
+                        </div>
+                    </li>
+
+					<li>
+                        <div class="parent has-children">
+                            <a href="/dashboard" data-trigger="2199">
+                                Inquiry                            </a>
+                        </div>
+                    </li>
+                                    <li>
+                        <div class="parent has-children">
+                            <a href="#" data-trigger="3394">
+                                Portfolio                            </a>
+                        </div>
+                    </li>
+                                    <li>
+                        <div class="parent">
+                            <a href="https://minaleandmann.com/about/">
+                                About                            </a>
+                        </div>
+                    </li>
+                                    <li>
+                        <div class="parent">
+                            <a href="https://minaleandmann.com/contact/">
+                                Contact                            </a>
+                        </div>
+                    </li>
+                                    <li>
+                        <div class="parent">
+                            <a href="/logout/" type="submit">Logout</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="parent">
+                        <span class="text-light" style="font-size: 20pt; color: white;">	Hi {{ request.user.username }}</span>
+                        </div>
+                        </li>
+                        	
+                
+            </ul>
+            {% else %}
+            <ul class="text-menu">
+
+                            <li>
+                <div class="parent">
+                    <a href="/services" >
+                        Services                            </a>
+                </div>
+            </li>
+                            <li>
+                <div class="parent has-children">
+                    <a href="#" data-trigger="3394">
+                        Portfolio                            </a>
+                </div>
+            </li>
+                            <li>
+                <div class="parent">
+                    <a href="https://minaleandmann.com/about/">
+                        About                            </a>
+                </div>
+            </li>
+                            <li>
+                <div class="parent">
+                    <a href="https://minaleandmann.com/contact/">
+                        Contact                            </a>
+                </div>
+            </li>
+                            <li>
+                <div class="parent">
+                    <a href="/login/">
+                        Login                            </a>
+                </div>
+            </li>
+
+            </ul>
+            {% endif %}	
+
+		</h1>
+		</div>
+			</div>
+			<div class="credits">
+				<p>© 2024 Wade Design Architects. All rights reserved.</p>
+				<p><a href="https://thebeauxartsdigital.com/" title="Site by: The Beaux Arts Digital">Site by</a></p>
+			</div>
+		</nav>
+	</header>
+	<main><div class="page">
+		<div class="m home">
+			<div class="images"><div class="lazy" data-src="https://images.prismic.io/wade-design/6b01b3df-5f0d-438a-a128-299f72210aa9_Wade-Design-Architects-Rise-and-Shine-2-Desktop.jpg?auto=compress,format&rect=0,0,3840,2560&w=1920&h=1280|https://images.prismic.io/wade-design/7dfed2ad-04ed-42a8-b522-169c9e41fdf8_Wade-Design-Architects-Rise-and-Shine-5-Mobile.jpg?auto=compress,format&rect=0,0,1290,1720&w=645&h=860" data-norel="" data-alt="Wade-Design-Architects-Rise-and-Shine-2-Desktop"></div><div class="lazy" data-src="https://images.prismic.io/wade-design/0754146e-dcd8-466d-b737-78c4ce089d3d_Dry+Creek+Retreat+Living+Room+Views+Wade+Design+Architects.jpg?auto=compress,format&rect=0,56,1172,781&w=1920&h=1280|https://images.prismic.io/wade-design/0754146e-dcd8-466d-b737-78c4ce089d3d_Dry+Creek+Retreat+Living+Room+Views+Wade+Design+Architects.jpg?auto=compress,format&rect=251,0,670,893&w=645&h=860" data-norel="" data-alt=""></div><div class="lazy" data-src="https://images.prismic.io/wade-design/8a21ce69-2306-47bb-9894-cc4debf08e9e_Wade-Design-Architects-Al-Fresco-Dining-Desktop.jpg?auto=compress,format&rect=0,0,3840,2560&w=1920&h=1280|https://images.prismic.io/wade-design/621733c9-0c28-43ad-ae52-9c50e16ee9c8_Wade-Design-Architects-Al-Fresco-Dining-Mobile.jpg?auto=compress,format&rect=0,0,1290,1720&w=645&h=860" data-norel="" data-alt="Wade-Design-Architects-Al-Fresco-Dining-Desktop"></div><div class="lazy" data-src="https://images.prismic.io/wade-design/49392022-8de1-42c0-a544-9beb2cf8491e_Wade-Design-Architects-Happy-Hour-Sunset-Desktop.jpg?auto=compress,format&rect=0,0,3840,2560&w=1920&h=1280|https://images.prismic.io/wade-design/9c50b9a9-63ef-42b3-b299-46e0ab954dfb_Wade-Design-Architects-Happy-Hour-Sunset-2-Mobile.jpg?auto=compress,format&rect=0,0,1290,1720&w=645&h=860" data-norel="" data-alt="Wade-Design-Architects-Happy-Hour-Sunset-Desktop"></div><div class="lazy" data-src="https://images.prismic.io/wade-design/fa6c2cff-e935-4c2a-acff-8aef63f46292_Wade-Design-Architects-Sundown-Unwind-2-Desktop.jpg?auto=compress,format&rect=0,0,3840,2560&w=1920&h=1280|https://images.prismic.io/wade-design/6cb4336d-c984-4b35-adae-87bff0cfbec9_Wade-Design-Architects-Sundown-Unwind-3-Mobile.jpg?auto=compress,format&rect=0,0,1290,1720&w=645&h=860" data-norel="" data-alt="Wade-Design-Architects-Sundown-Unwind-Desktop"></div></div>
+			<h1 class="large">Come Home.</h1>
+			<div class="time">
+				<div class="greetings"><h3>Good Morning, Rise and Shine</h3><h3>A mid morning pause</h3><h3>Al fresco dining under the mid day sun</h3><h3>Happy hour sunset</h3><h3>Sundown Unwind</h3></div>
+				<div class="slider">
+					<div class="icon sun"></div>
+					<div class="bar"></div>
+					<div class="knob"></div>
+					<div class="icon moon"></div>
+				</div>
+				<p></p>
+			</div>
+		</div>
+		</div>
+	</main>
+
+	
+<div class="overlay-menu">
+    <div class="side-menu-veil pnp-toggle-mob-nav" id="side-menu-veil"></div>
+
+    <div class="side-menu-container" id="side-menu-container">
+
+        <!-- Main Menu Start -->
+        <div class="main menu-wrapper">
+        
+        </div>
+
+		
+	<div class="vh"></div><!-- Vh unit mobile -->
+	<div class="pageTransition"></div><!-- White layer used for page transitions -->
+	<script type="application/ld+json">
+	{
+		"@context": "http://schema.org",
+		"@id": "https://www.wade-design.com/#organization",
+		"@type": "Organization",
+		"name": "Wade Design Architects",
+		"url": "https://www.wade-design.com/",
+		"logo": "https://www.wade-design.com/Assets/Grx/intro_logo.png",
+		"contactPoint": [
+		{
+			"@type": "ContactPoint",
+			"telephone": "+1-415-578-2856",
+			"email": "inquiries@wade-design.com",
+			"areaServed": "Worldwide",
+			"contactType": "sales"
+		}
+		],
+		"sameAs": [
+			"https://www.instagram.com/wadedesignarchitects_/",
+			"https://www.facebook.com/WadeDesignArchitects",
+			"https://www.linkedin.com/company/wade-design-architects/"
+		]
+	}
+	</script>
+	<script type="application/ld+json">
+	{"@context": "http://schema.org","@id": "https://www.wade-design.com/#website","@type": "WebSite","url": "https://www.wade-design.com/","name": "Wade Design Architects"}
+	</script>
+	<script type="application/ld+json">
+	{"@context": "http://schema.org","@id": "https://www.wade-design.com/#webpage","@type": "WebPage","url": "https://www.wade-design.com/","name": "Wade Design Architects"}
+	</script>
+	<script src="{% static 'js/gsap.min.js' %}"></script>
+	<script src="{% static 'js/EasePack.min.js' %}"></script>
+	<script src="{% static 'js/SplitText.min.js' %}"></script>
+	<script src="{% static 'js/ScrollToPlugin.min.js' %}" async="" defer=""></script>
+	<script src="{% static 'js/GLB.js' %}"></script>
+	<script src="{% static 'js/Modules.js' %}"></script>
+	<script src="{% static 'js/Main.js' %}"></script>
+
+</body></html>

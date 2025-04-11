@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #1c1c1c, #3a3a3a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .login-container {
+            text-align: center;
+        }
+        input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid white;
+            color: white;
+            width: 250px;
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            outline: none;
+        }
+        input::after{
+            background: transparent;
+        }
+        .submit-btn {
+            margin-top: 20px;
+            margin-left: 105px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 1px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .submit-btn::after {
+            content: "→";
+            font-size: 24px;
+            color: white;
+        }
+        a{
+            color: white;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>LOGIN</h2>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="submit-btn"></button>
+            </form>
+                
+
+        
+                {% if messages %}
+                <div>
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <p> Don't have an account? <a href="/register/">Register</a></p>
+        
+                
+            
+    </div>
+</body>
+</html>

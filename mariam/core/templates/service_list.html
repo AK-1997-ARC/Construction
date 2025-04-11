@@ -1,0 +1,27 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/service.css' %}">
+
+	<div class="wrapper">
+        <div style="margin-left: 150px;">
+            <h1>Our Services</h1>
+    <!-- <h1>Services in {{ category.name }}</h1> -->
+    <a href="{% url 'add_service' category.id %}"><button class="btn-1">Add Service</button></a>
+    <div class="container">
+        {% for service in services %}
+        <div class="service-card">
+            <img src="{{ service.image.url }}" alt="{{ service.name }}">
+            <h3>{{ service.name }}</h3>
+            <!-- <p>{{ service.description }}</p> -->
+        </div>
+        {% endfor %}
+    </div>
+    <!-- <a href="{% url 'add_service' category.id %}"><button class="btn-1">Add Service</button></a> -->
+    
+</div>
+</div>
+{% endblock %}

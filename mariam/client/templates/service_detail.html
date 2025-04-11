@@ -1,0 +1,26 @@
+
+
+{% block title %}{{ service.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ service.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ service.description }}</p>
+                    <p><strong>Price:</strong> ${{ service.price }}</p>
+                    <p><strong>Duration:</strong> {{ service.duration }} days</p>
+                    
+                    <a href="{% url 'create_enquiry' %}?service={{ service.id }}" class="btn btn-primary">
+                        Request this Service
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

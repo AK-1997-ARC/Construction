@@ -1,0 +1,14 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<div class="wrapper">
+    <div style="margin-left: 150px;">
+<h2>Reply to Inquiry from {{ enquiry.name }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Send Reply</button>
+</form>
+<a href="{% url 'enquiry_list' %}">Back to inquiries</a>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/service.css' %}">
+
+	<div class="wrapper">
+    <div style="margin-left: 150px;">
+    <h1>Service Categories</h1>
+    <a href="{% url 'add_service_category' %}"><button class="btn-1">Add Service Category</button></a>
+    
+    
+    <div class="container">
+        {% for category in categories %}
+        <div class="category-card">
+            <img src="{{ category.image.url }}" alt="{{ category.name }}" width="50%" height="50%">
+            <h3>{{ category.name }}</h3>
+            <a href="{% url 'service_list' category.id %}">View Services</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+    
+{% endblock %}

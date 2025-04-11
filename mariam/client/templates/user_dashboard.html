@@ -1,0 +1,161 @@
+
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>My Enquiries</h2>
+        {% if enquiries %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Message</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enquiry in enquiries %}
+                    <tr>
+                        <td>{{ enquiry.service.name }}</td>
+                        <td>
+                            <span class="badge {% if enquiry.status == 'pending' %}bg-warning{% elif enquiry.status == 'accepted' %}bg-success{% elif enquiry.status == 'converted' %}bg-info{% else %}bg-danger{% endif %}">
+                                {{ enquiry.status|title }}
+                            </span>
+                        </td>
+                        <td>{{ enquiry.created_at|date:"M d, Y" }}</td>
+                        <td>{{ enquiry.message|truncatewords:10 }}</td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#enquiryModal{{ enquiry.id }}">
+                                View Details
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% for enquiry in enquiries %}
+        <!-- Modal for each enquiry -->
+        <div class="modal fade" id="enquiryModal{{ enquiry.id }}" tabindex="-1" aria-labelledby="enquiryModalLabel{{ enquiry.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="enquiryModalLabel{{ enquiry.id }}">Enquiry Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Service:</strong> {{ enquiry.service.name }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge {% if enquiry.status == 'pending' %}bg-warning{% elif enquiry.status == 'accepted' %}bg-success{% elif enquiry.status == 'converted' %}bg-info{% else %}bg-danger{% endif %}">
+                                {{ enquiry.status|title }}
+                            </span>
+                        </p>
+                        <p><strong>Date:</strong> {{ enquiry.created_at|date:"M d, Y" }}</p>
+                        <p><strong>Message:</strong></p>
+                        <p>{{ enquiry.message }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-info">
+            You don't have any enquiries yet. <a href="{% url 'create_enquiry' %}">Make an enquiry</a> to get started.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if projects %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h2>My Projects</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Project Title</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>Expected End Date</th>
+                        <th>Assigned Staff</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr>
+                        <td>{{ project.title }}</td>
+                        <td>
+                            <span class="badge {% if project.status == 'in_progress' %}bg-primary{% elif project.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ project.status|title }}
+                            </span>
+                        </td>
+                        <td>{{ project.start_date|date:"M d, Y" }}</td>
+                        <td>{{ project.expected_end_date|date:"M d, Y" }}</td>
+                        <td>
+                            {% for staff in project.assigned_staff.all %}
+                                {{ staff.user.get_full_name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#projectModal{{ project.id }}">
+                                View Details
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% for project in projects %}
+        <!-- Modal for each project -->
+        <div class="modal fade" id="projectModal{{ project.id }}" tabindex="-1" aria-labelledby="projectModalLabel{{ project.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="projectModalLabel{{ project.id }}">Project Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Title:</strong> {{ project.title }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge {% if project.status == 'in_progress' %}bg-primary{% elif project.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ project.status|title }}
+                            </span>
+                        </p>
+                        <p><strong>Start Date:</strong> {{ project.start_date|date:"M d, Y" }}</p>
+                        <p><strong>Expected End Date:</strong> {{ project.expected_end_date|date:"M d, Y" }}</p>
+                        {% if project.actual_end_date %}
+                        <p><strong>Actual End Date:</strong> {{ project.actual_end_date|date:"M d, Y" }}</p>
+                        {% endif %}
+                        <p><strong>Description:</strong></p>
+                        <p>{{ project.description }}</p>
+                        <p><strong>Assigned Staff:</strong></p>
+                        <ul>
+                            {% for staff in project.assigned_staff.all %}
+                            <li>{{ staff.user.get_full_name }} - {{ staff.specialization }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %} 
