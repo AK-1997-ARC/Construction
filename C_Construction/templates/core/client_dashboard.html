@@ -1,0 +1,233 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Client Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{% url 'private_chat' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-comments me-2"></i>Private Chat
+                        </a>
+                        <a href="{% url 'service_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-list me-2"></i>View Services
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Overview -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Financial Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Total Invoiced</span>
+                                <span class="badge bg-info">${{ total_invoiced|default:"0.00" }}</span>
+                            </div>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Total Paid</span>
+                                <span class="badge bg-success">${{ total_paid|default:"0.00" }}</span>
+                            </div>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Pending Payments</span>
+                                <span class="badge bg-warning">${{ pending_payments|default:"0.00" }}</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-8">
+            <!-- Financial Management Tabs -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#invoices">Invoices</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#payments">Payments</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- Invoices Tab -->
+                        <div class="tab-pane fade show active" id="invoices">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice #</th>
+                                            <th>Project</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Due Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for invoice in recent_invoices %}
+                                            <tr>
+                                                <td>{{ invoice.invoice_number }}</td>
+                                                <td>{{ invoice.project.service.name }}</td>
+                                                <td>${{ invoice.amount }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ invoice.status_color }}">
+                                                        {{ invoice.get_status_display }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ invoice.due_date }}</td>
+                                                <td>
+                                                    <a href="{% url 'invoice_detail' invoice.id %}" class="btn btn-sm btn-primary" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    {% if invoice.status == 'pending' %}
+                                                        <a href="{% url 'process_payment' invoice.id %}" class="btn btn-sm btn-success" title="Make Payment">
+                                                            <i class="fas fa-money-bill"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="6" class="text-center">No invoices found</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Payments Tab -->
+                        <div class="tab-pane fade" id="payments">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice #</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Method</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for payment in recent_payments %}
+                                            <tr>
+                                                <td>{{ payment.invoice.invoice_number }}</td>
+                                                <td>${{ payment.amount }}</td>
+                                                <td>{{ payment.payment_date }}</td>
+                                                <td>{{ payment.get_payment_method_display }}</td>
+                                                <td>
+                                                    <a href="{% url 'invoice_detail' payment.invoice.id %}" class="btn btn-sm btn-primary" title="View Invoice">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="5" class="text-center">No payments found</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your Projects -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Projects</h5>
+                </div>
+                <div class="card-body">
+                    {% if projects %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Project Name</th>
+                                        <th>Assigned Staff</th>
+                                        <th>Status</th>
+                                        <th>Start Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in projects %}
+                                        <tr>
+                                            <td>{{ project.service.name }}</td>
+                                            <td>{{ project.staff.get_full_name }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ project.status_color }}">
+                                                    {{ project.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ project.start_date }}</td>
+                                            <td>
+                                                <a href="{% url 'project_detail' project.id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                                <a href="{% url 'project_chat' project.id %}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-comments"></i> Chat
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No projects found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for message in recent_messages %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ message.sender.get_full_name }}</strong>
+                                        <p class="mb-0 text-muted small">{{ message.content|truncatechars:50 }}</p>
+                                    </div>
+                                    <small class="text-muted">{{ message.created_at|timesince }} ago</small>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted mb-0">No recent activity</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

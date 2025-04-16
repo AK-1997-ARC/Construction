@@ -1,0 +1,103 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Private Chat{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Chat Partners List -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Chat Partners</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for partner in chat_partners %}
+                        <a href="{% url 'private_chat' partner.id %}" 
+                           class="list-group-item list-group-item-action {% if recipient == partner %}active{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ partner.get_full_name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ partner.get_user_type_display }}</small>
+                                </div>
+                                {% if partner.unread_messages_count > 0 %}
+                                    <span class="badge bg-primary rounded-pill">{{ partner.unread_messages_count }}</span>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% empty %}
+                        <div class="list-group-item">
+                            <p class="text-muted mb-0">No chat partners available.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="col-md-9">
+            {% if recipient %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Chat with {{ recipient.get_full_name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Messages -->
+                        <div class="chat-messages mb-4" style="height: 400px; overflow-y: auto;">
+                            {% for message in messages %}
+                                <div class="message mb-3 {% if message.sender == request.user %}text-end{% endif %}">
+                                    <div class="d-flex {% if message.sender == request.user %}justify-content-end{% endif %}">
+                                        <div class="message-content {% if message.sender == request.user %}bg-primary text-white{% else %}bg-light{% endif %} p-3 rounded" style="max-width: 70%;">
+                                            <p class="mb-1">{{ message.content }}</p>
+                                            {% if message.document %}
+                                                <a href="{{ message.document.url }}" class="btn btn-sm {% if message.sender == request.user %}btn-light{% else %}btn-primary{% endif %} mt-2" target="_blank">
+                                                    <i class="fas fa-file"></i> View Document
+                                                </a>
+                                            {% endif %}
+                                            <small class="d-block mt-2 {% if message.sender == request.user %}text-white-50{% else %}text-muted{% endif %}">
+                                                {{ message.created_at|date:"F j, Y, g:i a" }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted text-center">No messages yet. Start the conversation!</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Message Form -->
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">Send Message</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Select a Chat Partner</h5>
+                        <p class="card-text text-muted">Choose a user from the list to start a conversation.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Scroll to bottom of messages
+    document.addEventListener('DOMContentLoaded', function() {
+        const messagesContainer = document.querySelector('.chat-messages');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %} 

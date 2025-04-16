@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if is_project_specific %}
+        Invoices - {{ project.service.name }}
+    {% else %}
+        All Invoices
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>
+                        {% if is_project_specific %}
+                            Invoices for {{ project.service.name }}
+                        {% else %}
+                            All Invoices
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if invoices %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice Number</th>
+                                        {% if not is_project_specific %}
+                                            <th>Project</th>
+                                            <th>Client</th>
+                                        {% endif %}
+                                        <th>Amount</th>
+                                        <th>Issue Date</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in invoices %}
+                                    <tr>
+                                        <td>{{ invoice.invoice_number }}</td>
+                                        {% if not is_project_specific %}
+                                            <td>{{ invoice.project.service.name }}</td>
+                                            <td>{{ invoice.project.client.get_full_name }}</td>
+                                        {% endif %}
+                                        <td>${{ invoice.amount }}</td>
+                                        <td>{{ invoice.issue_date }}</td>
+                                        <td>{{ invoice.due_date }}</td>
+                                        <td>
+                                            <span class="badge {% if invoice.status == 'paid' %}bg-success{% elif invoice.status == 'overdue' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                {{ invoice.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'invoice_payments' invoice.id %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-money-bill"></i> Payments
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No invoices found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

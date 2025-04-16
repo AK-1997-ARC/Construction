@@ -1,0 +1,118 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Project Reports - {{ project.service.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Project Reports - {{ project.service.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h4>Project Information</h4>
+                            <p><strong>Client:</strong> {{ project.client.get_full_name }}</p>
+                            <p><strong>Status:</strong> {{ project.get_status_display }}</p>
+                            <p><strong>Budget:</strong> ${{ project.budget|floatformat:2 }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Financial Summary</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Total Invoices</th>
+                                        <td>${{ total_invoices|floatformat:2 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total Payments</th>
+                                        <td>${{ total_payments|floatformat:2 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total Expenses</th>
+                                        <td>${{ total_expenses|floatformat:2 }}</td>
+                                    </tr>
+                                    <tr class="{% if net_profit >= 0 %}table-success{% else %}table-danger{% endif %}">
+                                        <th>Net Profit</th>
+                                        <td>${{ net_profit|floatformat:2 }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if user.user_type in 'admin,staff' %}
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="mb-0">Create New Report</h4>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        {{ form|crispy }}
+                                        <button type="submit" class="btn btn-primary">Create Report</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Report History</h4>
+                            {% if reports %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Report Type</th>
+                                            <th>Period</th>
+                                            <th>Total Income</th>
+                                            <th>Total Expenses</th>
+                                            <th>Net Profit</th>
+                                            <th>Created By</th>
+                                            <th>Created At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for report in reports %}
+                                        <tr>
+                                            <td>{{ report.get_report_type_display }}</td>
+                                            <td>{{ report.start_date|date:"F d, Y" }} - {{ report.end_date|date:"F d, Y" }}</td>
+                                            <td>${{ report.total_income|floatformat:2 }}</td>
+                                            <td>${{ report.total_expenses|floatformat:2 }}</td>
+                                            <td>${{ report.net_profit|floatformat:2 }}</td>
+                                            <td>{{ report.created_by.get_full_name }}</td>
+                                            <td>{{ report.created_at|date:"F d, Y" }}</td>
+                                            <td>
+                                                <a href="{% url 'report_detail' report.id %}" class="btn btn-sm btn-info">View Details</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-info">
+                                No reports have been generated for this project yet.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Back to Project</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,89 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if project %}
+        Invoices for {{ project.name }}
+    {% else %}
+        All Invoices
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>
+                {% if project %}
+                    Invoices for {{ project.name }}
+                {% else %}
+                    All Invoices
+                {% endif %}
+            </h2>
+        </div>
+        {% if project and request.user.user_type == 'admin' or request.user.user_type == 'staff' %}
+        <div class="col text-end">
+            <a href="{% url 'create_invoice' project.id %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create New Invoice
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Project</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in invoices %}
+                        <tr>
+                            <td>{{ invoice.invoice_number }}</td>
+                            <td>
+                                {% if not project %}
+                                    <a href="{% url 'project_detail' invoice.project.id %}">
+                                        {{ invoice.project.name }}
+                                    </a>
+                                {% else %}
+                                    {{ invoice.project.name }}
+                                {% endif %}
+                            </td>
+                            <td>${{ invoice.amount }}</td>
+                            <td>
+                                <span class="badge {% if invoice.status == 'paid' %}bg-success{% elif invoice.status == 'overdue' %}bg-danger{% else %}bg-warning{% endif %}">
+                                    {{ invoice.status|title }}
+                                </span>
+                            </td>
+                            <td>{{ invoice.due_date|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'invoice_detail' invoice.id %}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                {% if request.user.user_type == 'admin' or request.user.user_type == 'staff' %}
+                                <a href="{% url 'edit_invoice' invoice.id %}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No invoices found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

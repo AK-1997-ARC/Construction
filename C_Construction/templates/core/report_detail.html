@@ -1,0 +1,208 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Financial Report - {{ report.project.service.name }} - {{ report.get_report_type_display }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Financial Report: {{ report.project.service.name }} - {{ report.get_report_type_display }}</h2>
+                    <small class="text-muted">Period: {{ report.start_date|date:"F d, Y" }} to {{ report.end_date|date:"F d, Y" }}</small>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h4>Project Information</h4>
+                            <p><strong>Project:</strong> {{ project.service.name }}</p>
+                            <p><strong>Client:</strong> {{ project.client.get_full_name }}</p>
+                            <p><strong>Report Created By:</strong> {{ report.created_by.get_full_name }}</p>
+                            <p><strong>Created On:</strong> {{ report.created_at|date:"F d, Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Financial Summary</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Total Invoices</th>
+                                        <td>${{ total_invoices|floatformat:2 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total Payments</th>
+                                        <td>${{ total_payments|floatformat:2 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total Expenses</th>
+                                        <td>${{ total_expenses|floatformat:2 }}</td>
+                                    </tr>
+                                    <tr class="{% if net_profit >= 0 %}table-success{% else %}table-danger{% endif %}">
+                                        <th>Net Profit</th>
+                                        <td>${{ net_profit|floatformat:2 }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h4>Invoice Status Summary</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tr class="table-success">
+                                        <th>Paid Invoices</th>
+                                        <td>{{ paid_invoices }}</td>
+                                    </tr>
+                                    <tr class="table-warning">
+                                        <th>Pending Invoices</th>
+                                        <td>{{ pending_invoices }}</td>
+                                    </tr>
+                                    <tr class="table-danger">
+                                        <th>Overdue Invoices</th>
+                                        <td>{{ overdue_invoices }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Expense Categories</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for category in expense_categories %}
+                                        <tr>
+                                            <td>{{ category.category }}</td>
+                                            <td>${{ category.total|floatformat:2 }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Report Summary</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    {{ report.summary|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h4>Detailed Transactions</h4>
+                            <ul class="nav nav-tabs" id="transactionsTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="invoices-tab" data-toggle="tab" href="#invoices" role="tab">Invoices</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="payments-tab" data-toggle="tab" href="#payments" role="tab">Payments</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="expenses-tab" data-toggle="tab" href="#expenses" role="tab">Expenses</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="transactionsTabContent">
+                                <div class="tab-pane fade show active" id="invoices" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Invoice #</th>
+                                                    <th>Date</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for invoice in invoices %}
+                                                <tr>
+                                                    <td>{{ invoice.invoice_number }}</td>
+                                                    <td>{{ invoice.issue_date|date:"F d, Y" }}</td>
+                                                    <td>${{ invoice.amount|floatformat:2 }}</td>
+                                                    <td>
+                                                        <span class="badge badge-{{ invoice.status|yesno:'success,warning,danger' }}">
+                                                            {{ invoice.get_status_display }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="payments" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Amount</th>
+                                                    <th>Method</th>
+                                                    <th>Invoice</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for payment in payments %}
+                                                <tr>
+                                                    <td>{{ payment.payment_date|date:"F d, Y" }}</td>
+                                                    <td>${{ payment.amount|floatformat:2 }}</td>
+                                                    <td>{{ payment.get_payment_method_display }}</td>
+                                                    <td>{{ payment.invoice.invoice_number }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="expenses" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Category</th>
+                                                    <th>Amount</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for expense in expenses %}
+                                                <tr>
+                                                    <td>{{ expense.date|date:"F d, Y" }}</td>
+                                                    <td>{{ expense.get_category_display }}</td>
+                                                    <td>${{ expense.amount|floatformat:2 }}</td>
+                                                    <td>{{ expense.description }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'project_reports' project.id %}" class="btn btn-secondary">Back to Reports</a>
+                    {% if user.user_type in 'admin,staff' %}
+                    <a href="{% url 'create_report' project.id %}" class="btn btn-primary">Create New Report</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

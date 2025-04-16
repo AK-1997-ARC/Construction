@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Assign Staff - {{ project.service.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Assign Staff to {{ project.service.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6>Project Details:</h6>
+                        <p><strong>Client:</strong> {{ project.client.get_full_name }}</p>
+                        <p><strong>Budget:</strong> ${{ project.budget }}</p>
+                        <p><strong>Start Date:</strong> {{ project.start_date|date:"F d, Y" }}</p>
+                        {% if project.staff %}
+                        <p><strong>Current Staff:</strong> {{ project.staff.get_full_name }}</p>
+                        {% endif %}
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="staff" class="form-label">Select Staff Member</label>
+                            <select class="form-select" id="staff" name="staff" required>
+                                <option value="">Choose a staff member</option>
+                                {% for staff in available_staff %}
+                                <option value="{{ staff.id }}" {% if project.staff == staff %}selected{% endif %}>
+                                    {{ staff.get_full_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Assign Staff</button>
+                            <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

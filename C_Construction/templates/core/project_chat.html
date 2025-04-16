@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Project Chat - {{ project.service.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Chat for {{ project.service.name }}</h5>
+                    <a href="{% url 'project_detail' project.id %}" class="btn btn-sm btn-outline-secondary">
+                        Back to Project
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="chat-container mb-4" style="max-height: 500px; overflow-y: auto;">
+                        {% for message in messages %}
+                        <div class="message mb-3 {% if message.sender == request.user %}text-end{% endif %}">
+                            <div class="card {% if message.sender == request.user %}bg-primary text-white{% endif %}" 
+                                 style="max-width: 75%; display: inline-block;">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="{% if message.sender == request.user %}text-white-50{% else %}text-muted{% endif %}">
+                                            {{ message.sender.get_full_name }}
+                                        </small>
+                                        <small class="{% if message.sender == request.user %}text-white-50{% else %}text-muted{% endif %}">
+                                            {{ message.created_at|date:"F d, Y H:i" }}
+                                        </small>
+                                    </div>
+                                    <p class="card-text mb-2">{{ message.content }}</p>
+                                    {% if message.file %}
+                                    <a href="{{ message.file.url }}" class="btn btn-sm {% if message.sender == request.user %}btn-light{% else %}btn-outline-primary{% endif %}" 
+                                       target="_blank">
+                                        <i class="fas fa-file"></i> View Attachment
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center text-muted">
+                            No messages yet. Start the conversation!
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="mb-3">
+                                    {{ form.content|as_crispy_field }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.file|as_crispy_field }}
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-paper-plane"></i> Send
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-scroll to bottom of chat container
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatContainer = document.querySelector('.chat-container');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    });
+</script>
+{% endblock %} 

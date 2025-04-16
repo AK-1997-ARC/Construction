@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Accept Project Inquiry - Construction Company{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Accept Project Inquiry</h5>
+            </div>
+            <div class="card-body">
+                <h6>Project Details:</h6>
+                <p><strong>Service:</strong> {{ project.service.name }}</p>
+                <p><strong>Client:</strong> {{ project.client.username }}</p>
+                <p><strong>Budget:</strong> ${{ project.budget }}</p>
+                <p><strong>Start Date:</strong> {{ project.start_date }}</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="staff" class="form-label">Assign Staff Member</label>
+                        <select class="form-select" id="staff" name="staff" required>
+                            <option value="">Select a staff member</option>
+                            {% for staff in available_staff %}
+                            <option value="{{ staff.id }}">{{ staff.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Accept Inquiry and Assign Staff</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,158 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{% url 'private_chat' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-comments me-2"></i>Private Chat
+                        </a>
+                        {% if user.user_type == 'admin' %}
+                            <a href="{% url 'add_service_category' %}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus me-2"></i>Add Service Category
+                            </a>
+                            <a href="{% url 'add_service' %}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus me-2"></i>Add Service
+                            </a>
+                            <a href="{% url 'add_staff' %}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-user-plus me-2"></i>Add Staff
+                            </a>
+                            <a href="{% url 'all_invoices' %}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-file-invoice-dollar me-2"></i>Manage Invoices
+                            </a>
+                        {% endif %}
+                        {% if user.user_type == 'client' %}
+                            <a href="{% url 'service_list' %}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-list me-2"></i>View Services
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Messages -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Messages</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for message in recent_messages %}
+                            <a href="{% url 'private_chat' message.sender.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ message.sender.get_full_name }}</strong>
+                                        <p class="mb-0 text-muted small">{{ message.content|truncatechars:50 }}</p>
+                                    </div>
+                                    <small class="text-muted">{{ message.created_at|timesince }} ago</small>
+                                </div>
+                            </a>
+                        {% empty %}
+                            <p class="text-muted mb-0">No recent messages</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-8">
+            {% if user.user_type == 'admin' %}
+                <!-- Admin Dashboard -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Admin Dashboard</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body">
+                                        <h6>Total Projects</h6>
+                                        <h3>{{ total_projects }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body">
+                                        <h6>Active Staff</h6>
+                                        <h3>{{ active_staff }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body">
+                                        <h6>Total Clients</h6>
+                                        <h3>{{ total_clients }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Projects Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Projects</h5>
+                </div>
+                <div class="card-body">
+                    {% if projects %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Project Name</th>
+                                        <th>Status</th>
+                                        <th>Start Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in projects %}
+                                        <tr>
+                                            <td>{{ project.service.name }}</td>
+                                            <td>
+                                                <span class="badge {% if project.status == 'completed' %}bg-success{% elif project.status == 'in_progress' %}bg-primary{% else %}bg-warning{% endif %}">
+                                                    {{ project.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ project.start_date }}</td>
+                                            <td>
+                                                <a href="{% url 'project_detail' project.id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                                <a href="{% url 'project_chat' project.id %}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-comments"></i> Chat
+                                                </a>
+                                                <a href="{% url 'project_invoices' project.id %}" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-file-invoice"></i> Invoices
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No projects found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

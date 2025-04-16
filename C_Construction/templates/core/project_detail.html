@@ -1,0 +1,168 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Project Details - Construction Company{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="mb-0">{{ project.service.name }}</h2>
+                <div class="btn-group mt-2">
+                    <a href="{% url 'project_detail' project.id %}" class="btn btn-outline-primary">Overview</a>
+                    <a href="{% url 'project_invoices' project.id %}" class="btn btn-outline-primary">Invoices</a>
+                    <a href="{% url 'project_expenses' project.id %}" class="btn btn-outline-primary">Expenses</a>
+                    <a href="{% url 'project_reports' project.id %}" class="btn btn-outline-primary">Reports</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <h6>Service: {{ project.service.name }}</h6>
+                <p><strong>Category:</strong> {{ project.service.category.name }}</p>
+                <p><strong>Status:</strong> 
+                    <span class="badge {% if project.status == 'pending' %}bg-warning{% elif project.status == 'in_progress' %}bg-primary{% elif project.status == 'completed' %}bg-success{% else %}bg-secondary{% endif %}">
+                        {{ project.get_status_display }}
+                    </span>
+                </p>
+                <p><strong>Budget:</strong> ${{ project.budget }}</p>
+                <p><strong>Start Date:</strong> {{ project.start_date }}</p>
+                {% if project.end_date %}
+                <p><strong>End Date:</strong> {{ project.end_date }}</p>
+                {% endif %}
+                <p><strong>Client:</strong> {{ project.client.username }}</p>
+                {% if project.staff %}
+                <p><strong>Assigned Staff:</strong> {{ project.staff.username }}</p>
+                {% endif %}
+
+                {% if user.user_type == 'staff' and user == project.staff %}
+                <div class="mt-3">
+                    <form method="post" action="{% url 'update_project_status' project.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Update Project Status</label>
+                            <select class="form-select" id="status" name="status">
+                                {% for status in project.STATUS_CHOICES %}
+                                <option value="{{ status.0 }}" {% if project.status == status.0 %}selected{% endif %}>
+                                    {{ status.1 }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Project Chat</h5>
+            </div>
+            <div class="card-body">
+                <div id="chat-messages" style="height: 400px; overflow-y: auto; margin-bottom: 20px;">
+                    {% for message in messages %}
+                    <div class="chat-message {% if message.sender == user %}message-sent{% else %}message-received{% endif %} mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <strong>{{ message.sender.username }}</strong>
+                                <small class="text-muted float-end">{{ message.created_at|date:"Y-m-d H:i" }}</small>
+                            </div>
+                            <div class="card-body">
+                                <p>{{ message.content }}</p>
+                                {% if message.file %}
+                                <a href="{{ message.file.url }}" target="_blank" class="btn btn-sm btn-info">
+                                    <i class="bi bi-file-earmark"></i> View File
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        {% if user.user_type == 'staff' and user == project.staff %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Staff Actions</h5>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'schedule_meeting' project.id %}" class="btn btn-primary w-100 mb-2">Schedule Meeting</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Meetings</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Location</th>
+                                <th>Agenda</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for meeting in meetings %}
+                            <tr>
+                                <td>{{ meeting.date_time }}</td>
+                                <td>{{ meeting.location }}</td>
+                                <td>{{ meeting.agenda }}</td>
+                                <td>
+                                    {% if meeting.date_time > now %}
+                                        <span class="badge bg-warning">Upcoming</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if meeting.date_time > now %}
+                                        {% if user.user_type == 'staff' and user == project.staff %}
+                                            <a href="{% url 'reschedule_meeting' meeting.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-calendar-alt"></i> Reschedule
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No meetings scheduled</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Scroll to bottom of chat messages
+    document.addEventListener('DOMContentLoaded', function() {
+        var chatMessages = document.getElementById('chat-messages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+</script>
+{% endblock %}
+{% endblock %} 

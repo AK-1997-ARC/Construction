@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Home - Construction Company{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Our Services</h1>
+    </div>
+</div>
+
+<div class="row">
+    {% for service in services %}
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ service.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ service.category.name }}</h6>
+                <p class="card-text">{{ service.description }}</p>
+                <p class="card-text"><strong>Price: ${{ service.price }}</strong></p>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-primary">Register to Enquire</a>
+                {% else %}
+                <a href="{% url 'project_inquiry' service.id %}" class="btn btn-primary">Make Inquiry</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-md-12">
+        <div class="alert alert-info">
+            No services available at the moment.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 
